@@ -1,0 +1,38 @@
+name: Build Docker Image
+
+run-name: ${{ github.actor }} trigger GitHub Actions to build Docker Image
+
+on:
+  push:
+    branches: [ "main" ]
+
+  schedule:
+  - cron: "0 3 1 * *"
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - 
+      name: Checkout GitHub Repository
+      uses: actions/checkout@v3
+      with:
+         lfs: true
+
+    -
+      name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    -
+      name: Build and push
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: wellsen/firefox
